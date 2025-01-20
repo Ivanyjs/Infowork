@@ -8,12 +8,10 @@ const config = require('./config.json');
 
 const uri = config.db
 
+const credentials = 'X509-cert-8385775632244829017.pem'
 const client = new MongoClient(uri, {
-    serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-    }
+    tlsCertificateKeyFile: credentials,
+    serverApi: ServerApiVersion.v1
   });
 
 const app = express();      // this need copy-paste to all files
@@ -212,12 +210,6 @@ app.patch("/endgame", async(req, res) => {
 //     }
 
 // })
-
-
-
-
-
-
 
 
 

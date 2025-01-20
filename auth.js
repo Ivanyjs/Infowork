@@ -13,19 +13,19 @@ const uri = config.db
 const secret = config.secret
 const saltrounds = config.saltrounds
 
+const credentials = 'X509-cert-8385775632244829017.pem'
 const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+    tlsCertificateKeyFile: credentials,
+    serverApi: ServerApiVersion.v1
+  });
 
 app.use(express.json())
-app.use (timeout('10s'))
+app.use (timeout('20s'))
 app.use((req, res, next) => {
     if (!req.timedout) next();
   });
+
+  
 app.get("/", async(req, res) => {
     res.send("Root of Auth Control");
 })
@@ -50,29 +50,9 @@ app.post("/register", async (req, res) => {
         res.send("Your e-mail has been registered to a account.");
         return;
     }
-    //Async implementation, can't continue.
-    /*
-    bcrypt.hash(req.body.password, saltrounds, function(err, hash) {
-        let regresult = await client.db("general").collection("Users").insertOne({
-            user: req.body.user,
-            name: req.body.name,
-            email: req.body.email,
-            password: hash
-        });
-        if(regresult) {
-            console.log(regresult);
-            res.send(regresult);
-        }
-        else {
-            console.log ("[ERR] Registeration failed unexpectedly");
-            res.send("???");
-        }
-    });
-    */
-    //Sync implementation of bcrypt, because I have no idea otherwise.
+    
     const hash = bcrypt.hashSync(req.body.password, saltrounds);
-    // const secret = otplib.authenticator.generateSecret();
-    // const token2 = otplib.authenticator.generate(secret);
+    
     const secret = otplib.authenticator.generateSecret();
     console.log(`Generated secret: ${secret}`);
 
@@ -92,7 +72,7 @@ app.post("/register", async (req, res) => {
     }
     else {
         console.log ("[ERR] Registeration failed unexpectedly")
-        res.send("???")
+        res.send("Error generating QR code")
     }
 })
 

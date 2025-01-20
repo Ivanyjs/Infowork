@@ -18,13 +18,11 @@ const timeout = require('connect-timeout');
 
 const master = config.masterpass //Please pretend this is encrypted
 
+const credentials = 'X509-cert-8385775632244829017.pem'
 const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+    tlsCertificateKeyFile: credentials,
+    serverApi: ServerApiVersion.v1
+  });
 
 app.use(express.json())
 
