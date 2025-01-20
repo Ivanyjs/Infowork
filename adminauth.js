@@ -11,7 +11,12 @@ const uri = config.db
 const secret = config.secret
 const saltrounds = config.saltrounds
 
-const master = config.masterpass //Please pretend this is encrypted, might forget if it is really encrypted.
+const otplib = require('otplib');
+const qrcode = require('qrcode');
+const timeout = require('connect-timeout');
+
+
+const master = config.masterpass //Please pretend this is encrypted
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -48,6 +53,7 @@ app.post("/register", async (req, res) => {
     }
 
     const hash = bcrypt.hashSync(req.body.password, saltrounds);
+    const secret = otplib.authenticator.generateSecret();
     let regresult = await client.db("general").collection("Admins").insertOne({
         name: req.body.name,
         password: hash
@@ -55,11 +61,13 @@ app.post("/register", async (req, res) => {
 
     if(regresult) {
         console.log(regresult)
-        res.send(regresult)
+        qrcode.toDataURL(secret, function(err, data_url) {
+            res.send('<img src="' + data_url + '">');
+        });
     }
     else {
         console.log ("[ERR] Registeration failed unexpectedly")
-        res.send("Something failed...?")
+        res.send("Something failed unexpectedly.")
     }
 })
 
@@ -69,13 +77,20 @@ app.post("/login", async(req, res) => {
         return;
     }
     const token = await authencheck(req.body.name, req.body.password)
+    const {token2,secret} = req.body;
+    const Valid = otplib.authenticator.check(token2,secret);
+
+if (Valid == true){
+    nonsense = "Welcome admin.";
+    res.send({"Token":token, "Auth":"Success", "motd": nonsense});
+
+}
     if(!token) {
         res.send("Authentication failure, check your info.");
         return;
     }
-    nonsense = "Welcome admin.";
-    res.send({"Token":token, "Auth":"Success", "motd": nonsense});
 })
+   
 
 
 
