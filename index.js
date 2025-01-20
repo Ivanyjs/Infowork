@@ -6,12 +6,12 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const config = require('./config')
 const auth = require("./auth.js")
 const admin = require("./adminauth.js")
-const gamestep = require("./game_steps.js")
+//const gamestep = require("./game_steps.js")
 const gamestart = require("./gamelogic.js")
 
 //Things, main variables, etc.
 const app = express();
-const port = config.port || 3000; //Eh.
+const port = config.port || 3000; 
 
 app.use(express.json()) 
 
@@ -29,5 +29,5 @@ app.listen(port, () => {
 
 app.use("/auth", auth.app) //Authentication Code.
 app.use("/admin", admin)
-app.use("/game",  gamestep)
+//app.use("/game",  gamestep)
 
