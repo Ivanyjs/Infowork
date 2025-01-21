@@ -59,4 +59,4 @@ jobs:
           app-name: 'infosec7788'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_83AFE4B30E0546A78ED1ACDB33D218CC }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EDF6E13BD5F04B3B866A819CF0D3A8A9 }}
